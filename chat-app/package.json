@@ -10,6 +10,8 @@
   "dependencies": {
     "core-js": "^3.8.3",
     "firebase": "^10.7.1",
+    "sass": "^1.69.7",
+    "sass-loader": "^14.0.0",
     "vue": "^3.2.13"
   },
   "devDependencies": {
@@ -22,9 +24,9 @@
     "eslint-plugin-vue": "^8.0.3"
   },
   "eslintConfig": {
-    "root": true,
+    "root": false,
     "env": {
-      "node": true
+      "node": false
     },
     "extends": [
       "plugin:vue/vue3-essential",
@@ -34,7 +36,7 @@
       "parser": "@babel/eslint-parser"
     },
     "rules": {
-      "no-unused-vars":"off"
+      "no-unused-vars": "off"
     }
   },
   "browserslist": [
