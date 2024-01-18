@@ -4,7 +4,7 @@
     <div class="form-inner">
       <h1>Login to FireChat</h1>
       <label for="username">Username</label>
-      <input type="text" v-model="inputUsername" placeholder="Please enter your username...">
+      <input type="text" id="username" v-model="inputUsername" placeholder="Please enter your username...">
       <input type="submit" value="Login">
     </div>
   </form>
@@ -18,8 +18,8 @@
     Loading messages...
   </section>
   <footer>
-    <form @submit.prevent="">
-      <input type="text" placeholder="Write a message...">
+    <form @submit.prevent="SendMessage">
+      <input type="text" v-model="inputMessage" placeholder="Write a message...">
       <input type="submit" value="Send">
     </form>
   </footer>
@@ -27,12 +27,13 @@
 </template>
 
 <script>
-import { reactive, onMounted, ref } from 'vue'
-import db from './db'
+import { reactive, ref } from 'vue'
+import { db, ref as dbRef, push as dbPush } from './db'
 
 export default {
   setup(){
     const inputUsername = ref("")   //reference of nothing
+    const inputMessage = ref("")    //input message from user
 
     const state = reactive({
       username: "",
@@ -44,12 +45,40 @@ export default {
           state.username = inputUsername.value
           inputUsername.value = ""
       }
-
     }
+
+  const SendMessage = () => {
+    console.log("Sending message...");
+    const messageDb = dbRef(db, "messages");
+    console.log("Message DB Reference:", messageDb);
+
+    if (inputMessage.value === "" || inputMessage.value === null) {
+      return;
+    }
+
+    const message = {
+      username: state.username,
+      content: inputMessage.value
+    };
+
+    dbPush(messageDb, message).then(() => {
+      console.log("Message sent successfully");
+      inputMessage.value = ""; // clear the form
+    });
+
+    // Listen for changes in the database
+    dbRef(messageDb).on("value", (snapshot) => {
+      console.log("Database updated:", snapshot.val());
+    }, (error) => {
+      console.error("Error listening to database changes:", error);
+    });
+  };
+
     return {
       inputUsername,
       Login,
-      state
+      state, 
+      SendMessage
     }
   }
 }
